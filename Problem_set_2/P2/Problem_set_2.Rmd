@@ -1,0 +1,97 @@
+---
+title: "Problem_set_2"
+output: html_notebook
+---
+# Problem 1
+
+```{r}
+data("airquality")
+knitr::kable(head(airquality))
+
+air<- na.omit(airquality)
+
+columns <- c(1,2,3,4,5,6)
+vars <- names(air)[columns]
+
+out <-  apply( combn(columns,2),2,function(x){
+         cor(air[,x[1]], air[x[2]], method = "pearson")
+        })
+
+Cor<- cbind(as.data.frame(t(combn(vars,2))),out)
+
+Cor
+
+library(ggplot2)
+
+m <- lm(air$Ozone~air$Temp)
+summary(m)
+
+my_theme_change <-function(){
+   theme(plot.title = element_text(size=rel(1.5), hjust = 0.5))
+} 
+
+ggplot(air, aes(x=Ozone,y=Temp)) + geom_point() + geom_abline()+ ggtitle("Ozone and Temp", subtitle = "Adjusted R-squared:  0.4833 ") + theme_bw() + my_theme_change() + theme(axis.title = element_text(size = rel(1.5)))
+```
+
+# Problem 2
+
+```{r}
+
+Fasta_file <- read.fasta("path to Fasta file" , as.string = TRUE, seqtype = "AA")
+
+pattern <- "\\S+\\|(\\S+)\\|\\S+"
+
+matches <- str_match(string = names(Fasta_file), pattern = pattern)
+
+id <- matches[,2]
+
+seqID <- sequence_ID.txt
+
+subset_Fasta_file <- Fasta_file[ ids %in% seqID]
+
+
+pattern2 <- "\\S+\\|\\S+\\|(\\S+)"
+
+str_match(string = names(subset_Fasta_file), pattern = pattern2)
+
+
+
+
+```
+
+# Problem 3
+
+```{r}
+BiocManager::install("seqinr")
+
+library(seqinr)
+
+Blosum62<-read.table("BLOSUM62", header = T)
+Blosum62 <- as.data.frame(Blosum62)
+
+Blosum62["A","R"]
+
+P3 <- read.fasta("/media/sf_CB2-101_class_fall_2020/Problem_set_2/ex_align.fas" ,seqtype = "AA", set.attributes = F)
+
+P3_df <- as.data.frame(P3)
+
+
+for(i in 1:ncol(P3)){
+  
+  
+}
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
