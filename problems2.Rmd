@@ -1,0 +1,94 @@
+---
+title: "Problemset 2"
+author: "Malay Basu (malay@uab.edu)"
+output: pdf_document
+---
+
+# Problem 1
+You can call `data(airquality)` in R. It will generate the following data.
+```{r}
+data("airquality")
+knitr::kable(head(airquality))
+```
+
+(a) Calculate the pairwise Pearson correlation of all the variables of this dataset and create a dataframe that has columns like this.
+
+| var1 | var2 | corr|
+|------|------|-----|
+|Ozone |Solar | 0.4 |
+
+```{r}
+
+install.packages("tidyverse")
+library(tidyverse)
+is.na.data.frame(airquality) 
+
+# Ozone and Solar.R both contain NA values. No other columns do. Must remove these before performing analysis. 
+
+a <- airquality$Ozone
+a <-a[!is.na(a)]
+
+a
+
+b <- airquality$Solar.R
+b <- b[!is.na(b)]
+
+c <- airquality$Wind
+d <- airquality$Temp
+e <- airquality$Month
+f <- airquality$Day
+
+airquality.clean <- data.frame(
+  ozone = a,
+  solar.r = b,
+  wind = c,
+  temp = d,
+  month = e,
+  day = f,
+  check.rows = FALSE
+) # This did not work. apparently number of rows must be equal. Will need to see if cor.test can take care of NA values itself
+
+###################################################
+
+###Try mutate function from package "tidyverse"
+airquality.na <- airquality %>% 
+  mutate(Ozone = Ozone[!is.na(Ozone)])+
+  mutate(Solar.R = Solar.r[!is.na(airquality$Solar.R)]) # why doesnt this work?
+
+airquality.na
+
+################################################################
+
+###Try to fix NA values with cor.test function####
+
+test <- cor(airquality$Ozone, airquality$Solar.R, use="pairwise.complete.obs") # this provides the same corr eestimate as the aabove using cor.test. Will move forward with cor. test with assumption that cor.test default takes care of NA values
+
+pairwiseCor <- function(airquality){
+  pairs <- combn(names(airquality), 2, simplify=FALSE)
+  df <- data.frame(var1=rep(0,length(pairs)), var2=rep(0,length(pairs)),
+                   Cor=rep(0,length(pairs)))
+  for(i in 1:length(pairs)){
+    df[i,1] <- pairs[[i]][1]
+    df[i,2] <- pairs[[i]][2]
+    df[i,3] <- round(cor(airquality[,pairs[[i]][1]], airquality[,pairs[[i]][2]], use="pairwise.complete.obs"))
+}
+pairwise.df <- df
+}
+
+head(pairwise.df)
+
+
+```
+
+
+(b) Using `ggplot` draw the scatterplot of the variables that show the highest correlation. You can arbitrarily choose one of the two variables as independent. Make the scatterplot publication quality. Also calculate the r.sq of the plot and put it on the top of the plot as subtitle of the plot. 
+
+# Problem 2
+Write an R script that takes two arguments: (1) a fasta file name, (2) a sequence ID. The script should print out the sequence matching the id in FASTA format to the terminal.
+
+# Problem 3
+
+Using `wget` download BLOSUM62 matrix from NCBI FTP server (ftp://ftp.ncbi.nih.gov/blast/matrices/BLOSUM62). Process it in anyway you can and read it in R as a matrix, a dataframe, or a list. You should store the data such a way that you can call the score given two amino acids as key as a fast lookup table. Read the accompanied `ex_align.fas` file and calculate the score of the given alignment. Consider each indel has score 0. The alignment file is in aligned fasta format.
+
+Tips: You need to use either `seqnir` or `Biostrings` package and loop through each position in the alignment. 
+
