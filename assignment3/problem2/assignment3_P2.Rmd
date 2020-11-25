@@ -1,0 +1,52 @@
+---
+title: "assignment_P2"
+author: "FengyuanHuang"
+date: "11/24/2020"
+output: html_document
+---
+```{r}
+### read data file
+setwd("/media/sf_emmahuang/Downloads/course/CBS101/CBS101_assignment/CBS101_assignment/CBS101_assignment/assignment3/problem2/")
+file="../data/9606.tsv.gz"
+varFile="../data/humsavar.txt"
+data=read.table(gzfile(paste0(file)), header=F)
+varData=read.table(gzfile(paste0(varFile)), header=F,fill=T)
+```
+
+
+```{r}
+### clean data
+varDataClean=varData[53:nrow(varData),]
+colnames(varDataClean)=c("geneName","AC","FTId","AAchange","Type","dbSNP","Disease")
+```
+
+
+```{r}
+### merge data
+mergeData=merge(data,varDataClean,by.x="V1",by.y="AC",all.x=T)
+### name the columns
+countTbl=rep(0,length(countTbl))
+names(countTbl)=unique(mergeData$V7)
+### remove NA from the AA change column
+mergeDataMoveNA=mergeData[complete.cases(mergeData$AAchange),]
+```
+
+
+```{r}
+### sort table
+tbl=table(mergeDataMoveNA$V7)
+tblSorted=tbl[order(tbl,decreasing = T)]
+tblSortedNew=cbind(names(tblSorted),tblSorted)
+colnames(tblSortedNew)=c("Domain","Variations")
+```
+
+
+```{r}
+### print result
+for(i in 1:nrow(tblSortedNew)){
+  cat(paste(tblSortedNew[i,1],tblSortedNew[i,2],"\n"))
+}
+write.table(tblSortedNew,"variation.txt",row.names = F,col.names = T,quote=F)
+```
+
+
