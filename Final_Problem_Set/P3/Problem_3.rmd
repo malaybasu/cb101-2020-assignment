@@ -1,0 +1,59 @@
+---
+title: "Problem 3"
+output: html_notebook
+---
+
+```{r}
+
+library(ggplot2)
+BiocManager::install("dplyr")
+library(dplyr)
+
+r <- read.table("ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/variants/humsavar.txt", header = F, skip = 49, sep = "", fill = T, stringsAsFactors = F, flush = T, nrows=78710) 
+r<- r[, -ncol(r)]
+write.table(r, "humsavar.tsv", row.names = F, col.names = F, quote = F, sep="\t")
+uniq.data <- as.data.frame((table(r$V1)))
+uniq.data
+
+top.5.genes <- uniq.data %>%
+arrange(desc(Freq)) %>%
+group_by_("Var1") %>%
+head(n = 5)
+
+
+
+```
+
+#frequency distribution
+```{r}
+f <- r[, -c(2, 3, 4, 6)]
+f.o <- f[order(fq[,2], fq[, 1]),]
+f.o$row_num <- seq.int(nrow(f.o))
+f.o <- head(f.o, n = 31006)
+f.o <- f.o[, -c(3)]
+f.uniq <- as.data.frame((table(f.o$V1)))
+
+
+barplot(f.uniq$Freq, main = "frequency distribution of disease variants ", xlab = "Gene", ylab = "Variants")
+
+
+```
+
+
+# part c
+
+```{r}
+barplot(f.uniq$Freq, main = "frequency distribution of disease variants", horiz = T, xlab = "Gene", ylab = "Variants") + abline(v=mean(uniq.data$Freq), col = "Red")
+
+
+
+
+```
+
+
+
+
+
+
+
+
