@@ -18,7 +18,51 @@ You can include R code in the document as follows:
 ```{r}
 wget("ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/variants/humsavar.txt")
 list.files()
-read("humsavar.txt")
-variation <- read.table("humsavar.txt", header = F, )
+r <- read.table(
++     "ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/variants/humsavar.txt",
++     header = F,
++     skip = 49, sep = "", fill = T,
++     stringsAsFactors = F, flush = T,
++     nrows=78710)
+
+r<- r[, -ncol(r)]
+
+pfam.table <- read.table("9606.tsv", sep = "\t", col.names = (c("seq id", "alignment start", 'alignment end', 'envelope start', "envelope end", "hmm acc", 'hmm name', 'type', 'hmm start', 'hmm end', 'hmm length', 'bit score', 'E-value', 'clan')))
+head(pfam.table)
+
+str(pfam.table)
+str(r)
+
+pfam.table.trunc <- pfam.table[c("seq.id", "hmm.name")]
+r.trunc <- r[c("V2", "V6")]
+#head(pfam.table.trunc)
+#head(r.trunc)
+
+merged <- merge(pfam.table.trunc, r.trunc, by.x = "seq.id", by.y = "V2")
+#head(merged)
+#str(merged)
+
+domain.vars <- merged[c("hmm.name","V6")]
+#str(domain.vars)
+
+uniq.domains.in.vars <- unique(domain.vars)
+#str(uniq.domains.in.vars)
+
+domain.var.table <- table(uniq.domains.in.vars$hmm.name)
+#head(domain.var.table)
+
+domain.var.df <- as.data.frame(domain.var.table)
+#head(domain.var.df)
+
+colnames(domain.var.df) <- c("Domain", "Variants")
+#head(domain.var.df)
+
+
+descending.var.domains <- domain.var.df[order(-domain.var.df$Variants),]
+
+head(descending.var.domains)
+
+print("Fin")
+
 ```
 
