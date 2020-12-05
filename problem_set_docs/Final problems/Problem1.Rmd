@@ -33,30 +33,37 @@ practice.function <- function(x, y) {
     print("Okay")
 }
 
-practice.function("A0A024QZ18", "100")
-pfam.list$envelope.start[seqid=="A0A024QZ18"]    
-pfam.list$envelope.end[seqid=="A0A024QZ18"]
-#function only works on the first instance of the seq.id...
 
+#generates a dataframe of only positions with sequence id of interest
 
-practice.function2 <- function(x, y) {
-  if ((pfam.list$envelope.end[pfam.list$seq.id==x] >=y) & (pfam.list$envelope.start[pfam.list$seq.id==x] <=y)) 
-    print(pfam.list$hmm.name[pfam.list$seq.id==x,])
+positions <- which(pfam.table$seq.id=="P17040")
+#view the new dataframe
+pfam.table[positions, ]
+
+positions
+#Loop through the new dataframe for the domains where the condition (comparing envelope start point/end point to our position/locus of interest (y) here) is true
+
+for (row in 1:nrow(pfam.table[positions, ])){
+    y <- 53
+    if(as.integer(pfam.table[positions, ]$envelope.start[row]) <= y && as.integer(pfam.table[positions, ]$envelope.end[row]) >= y) {
+      print(pfam.table[positions, ]$hmm.name[row])
+    }
 }
 
-practice.function2("A0A024QZ18", "100")
-#Doesn't work either
+#repeat just to make sure it works with different seqid and position
+positions2 <- which (pfam.table$seq.id=="F5H6A5")
+#verify domains at sites of pfam.table[positions2, ]
+pfam.table[positions2, ]
 
-#another try..
-args = commandArgs(trailingOnly = TRUE)
-ptn.seq.id = args[1] 
-location = args[2]
 
-pfam.table <- read.table(gzfile("9606.tsv.gz"))
+for (row in 1:nrow(pfam.table[positions2, ])){
+    f <- 365
+    if(as.integer(pfam.table[positions2, ]$envelope.start[row]) <= f && as.integer(pfam.table[positions2, ]$envelope.end[row]) >= f) {
+      print(pfam.table[positions2, ]$hmm.name[row])
+    }
+}
 
-domain = pfam.table[which((pfam.table$seq.id == ptn.seq.id) & (pfam.table$envelope.start <= as.integer(location)) & (pfam.table$envelope.end >= as.integer(location))), ]
-
-#doesn't work either.
+#Not the prettiest but it gets the job done        
 
 ```
 
