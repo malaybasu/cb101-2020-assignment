@@ -7,7 +7,17 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+"Part 1" 
 
+```{r}
+library(dplyr)
+most.disease.mutations <- r %>% 
+  group_by(V5 = "Disease") %>%
+  count(r$V1) %>%
+  arrange(desc(n))
+top5 <- head(most.disease.mutations, 5)
+top5
+```
 ```{r}
 
 ```
