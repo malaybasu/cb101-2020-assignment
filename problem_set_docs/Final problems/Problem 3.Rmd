@@ -25,7 +25,7 @@ r<- r[, -ncol(r)]
 library(dplyr)
 most.disease.mutations <- r %>% 
   group_by(V5 = "Disease") %>%
-  count(r$V1,sort = T) %>%
+  count(r$V1) %>%
   arrange(desc(n))
 top5 <- head(most.disease.mutations, 5)
 top5
@@ -39,7 +39,7 @@ ggplot(most.disease.mutations, aes(x=n))+ geom_histogram(binwidth = 20)
 # Part 3
 ```{r}
 mean(most.disease.mutations$n)
-#total number of genes in human genome is <20,000. FOr the purpose of this exercise the mean was calculated out of the number of genes with variants reported in humsavar.txt
+#total number of genes in human genome is <20,000. For the purpose of this exercise the mean was calculated out of the number of genes with variants reported in humsavar.txt
 str(unique(r$V1))
 #12706 genes have variants reported in humsavar.txt
 round(12706/(as.integer(sum(most.disease.mutations$n))), 2)

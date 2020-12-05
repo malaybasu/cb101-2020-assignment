@@ -7,24 +7,24 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## GitHub Documents
+```{r}
+domain.freq.table <- pfam.table.trunc %>%
+  count(pfam.table.trunc$hmm.name) %>%
+  arrange(desc(n))
 
-This is an R Markdown format used for publishing markdown documents to GitHub. When you click the **Knit** button all R code chunks are run and a markdown file (.md) suitable for publishing to GitHub is generated.
+colnames(domain.freq.table) <- c("Domain", "Domain_Frequency")
 
-## Including Code
+merged.domain.var.freq<- merge(x= descending.var.domains, y= domain.freq.table, by.x = "Domain", by.y = "Domain")
 
-You can include R code in the document as follows:
+dom.freq <- merged.domain.var.freq$Domain_Frequency
+dom.var<- merged.domain.var.freq$Variants
 
-```{r cars}
-summary(cars)
+rcorr(x = dom.freq, y = dom.var, type=c("pearson"))
+domain.reg.model<- lm(dom.freq~dom.var, data = merged.domain.var.freq)
+summary(domain.reg.model)
+
+ggplot(data=merged.domain.var.freq, aes(x=dom.freq, y=dom.var)) +geom_point() +ggtitle("Relationship between domain frequency and the number of \n variants within respective domains in the human genome") +theme_dark() +annotate("text", x = 2000,y = 2000, label = "r^{2} == 0.22", parse = TRUE) +theme(plot.title=element_text(hjust=0.5,size = rel(1.5))) +theme(axis.title =element_text(hjust=0.5,size = rel(1.5)))
+#this would be a better graph & model if we removed the frequency outlier at dom.freq=8075, (zinc finger CH2H, transcription factor domain group) 
+
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
