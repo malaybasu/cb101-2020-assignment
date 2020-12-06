@@ -1,0 +1,96 @@
+---
+title: "Assignment2_Problem1_GG"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## GitHub Documents
+
+This is an R Markdown format used for publishing markdown documents to GitHub. When you click the **Knit** button all R code chunks are run and a markdown file (.md) suitable for publishing to GitHub is generated.
+
+
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+##Assignment 2 Problem 1
+
+You can call `data(airquality)` in R. It will generate the following data.
+```{r}
+data("airquality")
+knitr::kable(head(airquality))
+```
+(a) Calculate the pairwise Pearson correlation of all the variables of this dataset and create a dataframe that has columns like this.
+
+| var1 | var2 | corr|
+|------|------|-----|
+|Ozone |Solar | 0.4 |
+```{r}
+airquality.cor = cor(airquality, 
+                     use="complete.obs",
+                     method = "pearson"
+)
+```
+#if use is "complete.obs" then missing values are handled by casewise deletion (and if there are no complete cases, that gives an error)
+#airquality.cor presents all the pearson correlation variance values, but in a different format than asked for in the question. To create a dataframe that has columns like those in the question:
+```{r}
+#create empty dataframe for statistics
+library(dplyr)
+stats <- data.frame(var1 = "var1", var2="var2", corr=1)
+stats <- stats%>% mutate(var1 = as.character(var1),
+                           var2 = as.character (var2),
+                           corr = as.numeric(corr))
+head(stats)
+```
+```{r}
+#nested loop for correlations
+for(i in 1:6) {
+  for(j in 1:6) {
+    a <- cor.test(airquality[,i],airquality[,j])
+    row <- c(i,j, a$estimate)
+    stats <- rbind(stats, row)
+  }
+  }
+head (stats)
+stats <- stats %>% filter (corr !=1)
+```
+```{r}
+#replace numbers with variables
+stats[stats == "1"] <- "Ozone"
+stats[stats == "2"] <- "Solar.R"
+stats[stats == "3"] <- "Wind"
+stats[stats == "4"] <- "Temp"
+stats[stats == "5"] <- "Month"
+stats[stats == "6"] <- "Day"
+View(stats)
+```
+
+(b) Using `ggplot` draw the scatterplot of the variables that show the highest correlation. You can arbitrarily choose one of the two variables as independent. Make the scatterplot publication quality. Also calculate the r.sq of the plot and put it on the top of the plot as subtitle of the plot. 
+```{r}
+#View stats and sort by corr column, Ozone and Temp have the highest correlation
+b <- lm(formula=airquality$Temp~airquality$Ozone)
+summary (b)
+#Adjusted R-squared value: 0.4832
+#Use ggplot to make scatterplot for Ozone vs Temp 
+library(ggplot2)
+ggplot(airquality, aes(x=Temp, y=Ozone)) +
+  geom_point ()+
+  ggtitle("Correlation between Ozone and Temperature", subtitle="R^2=0.4832") +
+  geom_smooth(method = "lm", se=F, color="black") +
+  theme_bw() +
+  xlab("Temperature") +
+  ylab("Ozone") +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust=0.5))
+```
+
