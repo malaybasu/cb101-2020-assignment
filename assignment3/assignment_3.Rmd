@@ -1,0 +1,113 @@
+---
+title: "Assignment_3"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+###Problem 1####
+The PFAM domain distribution for human proteome can be found at ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/proteomes/9606.tsv.gz. The first column of this file is the protein accession number. The location of the domain hit for each gene is given by the columns 2-5. Columns 2-3 are alignment start and end. Columns 4-5 are envelope start and end. Envelopes are generally considered the location of a domain on a gene. Write a R scrpt that takes 9606.tsv.gz file as a first argument, a protein accession number as a second argument, and a location (integer) as a third argument. The program should print the domain name (hmm_name), if the location falls within a domain for a given protein accession. The program should return nothing if the position is outside the boundaries of domains. We should be able to run the program like this
+
+> problem1.R ../data/9606.tsv.gz O95931 20
+> Chromo
+
+Hint: You should create a list using the protein accession as key and location start and end as values. You
+might want to create a nested list or two separate lists.
+
+
+```{bash}
+curl -O ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/proteomes/9606.tsv.gz
+
+#gunzip 9606.tsv.gz
+```
+```{r}
+library(Biostrings)
+library(stringr)
+library(dplyr)
+library(tidyverse)
+
+test <- read.table(file = '9606.tsv', sep = '\t', header = F, fill = T)
+
+test2 <- test %>%
+  select(V1, V4, V5, V7)
+
+names(test2)[1] <- "accnum"
+names(test2)[2] <- "envelope_start"
+names(test2)[3] <- "envelope_end"
+names(test2)[4] <- "hmm_name"
+
+args <- commandArgs(trailingOnly = T)
+
+file <- args[1]
+accnum <- args[2]
+location <- args[3] 
+
+
+
+for(i in 1:ncol(test2)) {
+  if(i >= test2$envelope_start)
+}
+
+
+
+for (i in 1:ncol(iris)) {
+  for (j in 1:ncol(iris)) {
+    cat(paste(i, j, "\n", sep = "\t"))
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+read.table(file = '9606.tsv', sep = '\t', header = F, fill = T)
+
+
+test2 <- as.list.data.frame(test$V1, test$V4, test$V5, test$V7)
+
+for(i in 1:length(test2)) {
+  if()
+  print(test2[i])
+}
+
+
+
+
+
+
+
+```
+
+
+
+```{bash}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
