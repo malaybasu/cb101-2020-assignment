@@ -1,6 +1,6 @@
 ---
 title: "Problemset 2"
-author: "Malay Basu (malay@uab.edu)"
+author: "Brendon Herring (brendon@uab.edu)"
 output: pdf_document
 ---
 
