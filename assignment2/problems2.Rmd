@@ -1,0 +1,174 @@
+---
+title: "Problemset 2"
+author: "Sam Gary (sgary@uab.edu)"
+output: html notebook
+---
+
+# Problem 1
+You can call `data(airquality)` in R. It will generate the following data.
+```{r}
+install.packages("knitr")
+library(knitr)
+data("airquality")
+knitr::kable(head(airquality))
+```
+
+(a) Calculate the pairwise Pearson correlation of all the variables of this dataset and create a dataframe that has columns like this.
+
+| var1 | var2 | corr|
+|------|------|-----|
+|Ozone |Solar | 0.4 |
+
+
+
+install.packages("tidyverse")
+library(tidyverse)
+is.na.data.frame(airquality) 
+
+# Ozone and Solar.R both contain NA values. No other columns do. Must remove these before performing analysis. 
+
+a <- airquality$Ozone
+a <-a[!is.na(a)]
+
+a
+
+b <- airquality$Solar.R
+b <- b[!is.na(b)]
+
+c <- airquality$Wind
+d <- airquality$Temp
+e <- airquality$Month
+f <- airquality$Day
+
+#airquality.clean <- data.frame(
+  #ozone = a,
+  #solar.r = b,
+  #wind = c,
+  #temp = d,
+  #month = e,
+  #day = f,
+  #check.rows = FALSE
+ # This did not work. apparently number of rows must be equal. Will need to see if cor.test can take care of NA values itself
+
+###################################################
+
+###Try mutate function from package "tidyverse"
+#airquality.na <- airquality %>% 
+  #mutate(Ozone = Ozone[!is.na(Ozone)])+
+  #mutate(Solar.R = Solar.r[!is.na(airquality$Solar.R)]) # why doesnt this work?
+
+#airquality.na
+
+
+```{r}
+######################################################################
+pairs <- combn(names(airquality), 2, simplify=FALSE)
+df <- data.frame(var1=rep(0,length(pairs)), var2=rep(0,length(pairs)),
+                   Cor=rep(0,length(pairs)))
+for(i in 1:length(pairs)){
+    df[i,1] <- pairs[[i]][1]
+    df[i,2] <- pairs[[i]][2]
+    df[i,3] <- cor(airquality[,pairs[[i]][1]], airquality[,pairs[[i]][2]], use="pairwise.complete.obs")
+}
+pairwise.df <- df
+
+
+head(pairwise.df)
+```
+
+
+(b) Using `ggplot` draw the scatterplot of the variables that show the highest correlation. You can arbitrarily choose one of the two variables as independent. Make the scatterplot publication quality. Also calculate the r.sq of the plot and put it on the top of the plot as subtitle of the plot. 
+
+```{r}
+sort(pairwise.df$Cor, decreasing = TRUE) # highest correlation is between Ozone and Temp.
+is.na.data.frame(airquality) # Identify NA values
+a <- airquality$Ozone # reassing Ozone values to "a"
+a <- a[!is.na(a)] # Remove NA values from a
+
+b <- airquality$Temp
+
+
+
+## Apparently geom_point within ggplot can handle NA values.
+
+plot.1 <- ggplot(airquality, aes(x = Ozone, y = Temp))+
+  geom_point(na.rm = TRUE)+ 
+  ggtitle("Correlation Between Ozone and Temp", subtitle = "Adjusted R-squared = 0.4832")+
+  theme(plot.title = element_text(size = rel(2.0), hjust = 0.5))+
+  theme(plot.subtitle = element_text(hjust = 0.5))
+  theme(axis.title = element_text(size = 15.0))
+  
+  theme_bw()
+  
+print(plot.1)
+ 
+# Calculate r-squared value using linear regression:
+air.model <- lm(formula = airquality$Ozone ~ airquality$Temp)
+summary(air.model) # Adjusted R2 = 0.4832
+
+
+
+
+
+```
+
+# Problem 2
+Write an R script that takes two arguments: (1) a fasta file name, (2) a sequence ID. The script should print out the sequence matching the id in FASTA format to the terminal.
+
+```{r}
+for (i in 1:(find(what = "*.fa"))) {
+  if(ID = "x") {
+    cat()
+    print()
+    
+  }
+  
+}
+```
+
+
+# Problem 3
+
+Using `wget` download BLOSUM62 matrix from NCBI FTP server (ftp://ftp.ncbi.nih.gov/blast/matrices/BLOSUM62). Process it in anyway you can and read it in R as a matrix, a dataframe, or a list. You should store the data such a way that you can call the score given two amino acids as key as a fast lookup table. Read the accompanied `ex_align.fas` file and calculate the score of the given alignment. Consider each indel has score 0. The alignment file is in aligned fasta format.
+
+Tips: You need to use either `seqnir` or `Biostrings` package and loop through each position in the alignment. 
+
+```{r}
+library(seqinr)
+library(Biostrings)
+library(protr)
+
+#Read blosum62 table - reads in as a data frame.
+
+blosum <- read.table("BLOSUM62", header = TRUE)
+blosum
+str(blosum)
+dim(blosum)
+
+# Read in the ex_align.fas file - reads in as a list.
+readAAStringSet()
+
+example <- read.fasta("ex_align.fas", as.string = TRUE, seqtype = "AA")
+example
+str(example)
+
+example.ff <- readAAStringSet(example, skip = "-") # I can't read the sequences and I don't understand why.Receive an eroror of "filepath must be character vector with no NAs"
+seq.name <- names(example)
+sequence <- paste(example)
+
+ex.split <- split(x = example$P1, f = example$P2)
+ex.split
+
+readAAStringSet(ex.split) # will not read data even when split into just P1 sequence. 
+
+# Since I canont read the sequence I will instead just write a generic for loop that resembles the one I would write for the actual data.
+
+loop <- rep(seq.name,sequence)
+
+for (i in 1:x){
+  loop [i] <- blosum[sequence[1,i], sequence [2,1]]
+  cat(loop)
+}
+
+
+```
