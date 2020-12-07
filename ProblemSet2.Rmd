@@ -1,0 +1,113 @@
+---
+title: "Assignment2"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+## Problem 1
+```{r}
+## Problem 1a
+library(dplyr)
+data("airquality")
+knitr::kable(head(airquality))
+
+statistic <- data.frame(var1 = "var1", var2 = "var2", corr = 1)
+statistic <- statistic %>% mutate(var1 = as.character(var1),
+                          var2 = as.character(var2),
+                          corr = as.numeric(corr))
+
+corr <- cor.test(airquality$Ozone, airquality$Solar.R)
+corr$estimate
+row <- c("Ozone", "Solar.R", corr$estimate)
+statistic <- rbind (statistic, row)
+head(statistic)
+
+corr <- cor.test(formula=~Ozone+Solar.R, data=airquality)
+corr <- cor.test(airquality[,1], airquality[,2])
+
+for(i in 1:6) {
+  for(j in 1:6) {
+    corr <- cor.test(airquality[,i], airquality[,j])
+    row <- c(i, j, corr$estimate)
+    statistic <- rbind(statistic, row)
+  }
+}
+
+
+statistic <- statistic %>% filter(corr != 1)
+
+statistic[statistic == "1"] <- "Ozone"
+statistic[statistic == "2"] <- "Solar.R"
+statsistic[statistic == "3"] <- "Wind"
+statsistic[statistic == "4"] <- "Temp"
+statsitic[statistic == "5"] <- "Month"
+statsistic[statistic == "6"] <- "Day"
+head(statistic)
+
+
+
+#Problem 1b
+library(ggplot2)
+# r2 of Ozone vs Temp
+r2 <- lm(formula=airquality$Ozone~airquality$Temp)
+summary(r2)
+# R^2 = 0.48
+ggplot(airquality, aes(x=Ozone, y=Temp, color=Month)) +
+  geom_point() + geom_smooth(method="lm", se=F) + theme_bw() + ylab("Temperature")
+```
+``
+
+## Problem 2 
+```{r}
+library(seqinr)
+
+read.fasta(file = "nameoffile.fa")
+FASTA = read.fasta('nameoffile.fa')
+seq_name = names(FASTA)
+sequence = paste(FASTA)
+df <- data.frame(seq_name, sequence)
+a <- grep(b, seq_name)
+df[a,2]
+
+```
+
+## Problem 3
+```{r}
+library(seqinr)
+library(utils)
+library(dplyr)
+library(Biostrings)
+BLOSUM62 <- read.table(file = "media/sf_matthewcheung/Documents/CB2-101/BLOSUM62.txt")
+View(BLOSUM62)
+exalign <- read.fasta(file = "ex_align.fas")
+
+
+aa <- read.table("BLOSUM62", header=T)
+
+aa2 <-data.frame(A=0, R=0, N=0, D=0, C=0, Q=0, E=0,
+                       G=0, H=0, I=0, L=0, K=0, M=0, F=0, P=0, S=0, T=0, W=0, 
+                       Y=0, V=0, B=0, Z=0, X=0, X.=0)
+row.names(aa2) <- "-"
+aa3 <- rbind(aa, aa2)
+
+aa4 <- data.frame("k"=rep(0,25))
+colnames(aa4) <- "-"            
+cbind(aa3, aa4)
+
+fastaFile = readAAStringSet(exalign)
+seq_name = names(fastaFile)
+sequence = paste(fastaFile)
+df <- data.frame(seq_name, sequence)
+
+#not sure where to go from here
+
+```
