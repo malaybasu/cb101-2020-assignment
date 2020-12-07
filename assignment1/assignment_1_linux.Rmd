@@ -1,0 +1,92 @@
+---
+title: "Assignment 1"
+output: html_assignment1
+---
+
+# Exercise 1
+```{r}
+wget (ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/proteomes/)
+
+cd github/cb101-2020-assignment/assignment1/
+
+cat index.html | cut -f6 | sort | uniq -c| wc -l
+
+```
+
+# Exercise 2
+```{r}
+wget -r -A.faa -I ftp://ftp.ncbi.nlm.nih.gov/genomes/archive/old_refseq/Bacteria/Yersinia_pestis_*
+  
+  # the -I specifies the data to be dumped into directories. 
+  
+```
+
+# Exercise 3
+```{r}
+ find . -name "*.faa" | grep "^>*" | sort | uniq -c | wc -l
+
+  # the result of this command was 14 proteins which does not seem correct. Nevermind, this yields 14 .faa files. 
+echo `cat NC_000913.faa | grep -v "^>" | tr -d "\n" | wc -c`
+for i in `find . -name "*.faa"`; 
+do cat $i | grep "^>*" | sort | uniq -c | wc -l; 
+done;
+
+# this gives me the total number proteins for each file, not the total unique for all files combined. 
+382
+36
+523
+23946
+23305
+541
+42
+545
+21173
+368
+22531
+525
+337
+39
+
+## Attempted this for average number of proteins but didn't work. 
+for i in `find . -name "*.faa"`; 
+do echo $(cat $i | grep "^>*" | sort | uniq -c | wc -l)/$(find . -name "*.faa" | wc -l) | bc; # this for loop did not work. Not sure why, but I will attempt to split the commands up and just run them separately.
+done;
+
+
+# total number of ">" will identify total number of proteins. Will need to sort uniq to identify total unique proteins.
+cat $(find . -name "*.faa") | grep "^>*" | sort | uniq -c | wc -l
+
+# Total number of unique proteins is 44801.
+```
+
+# Exercise 4
+```{r}
+# A)
+wget ftp://ftp.ncbi.nlm.nih.gov/genomes/archive/old_refseq/Bacteria/Escherichia_coli_K_12_substr__MG1655_uid57779/NC_000913.faa
+
+cat NC_000913.faa | grep "^>" | wc -l # 4140, denominator of total proteins
+
+cat NC_000913.faa | grep -v "^>" | wc -c # 1332576 is for characters. This includes return spaces, however.
+
+cat NC_000913.faa | grep -v "^>" | tr -d "\n" | wc -c # 1311795 characters (amino acids), excluding spaces.
+
+echo `cat NC_000913.faa | grep -v "^>" | tr -d "\n" | wc -c` # echo with backticks means echo (expression/variable to be made) of what's inside the backtick and print the product of the expression/outcome as a variable.  
+
+echo $(cat NC_000913.faa | grep -v "^>" | tr -d "\n" | wc -c)/$(cat NC_000913.faa | grep "^>" | wc -l) | bc # combine the 2 commands to divide number of amino acids by total number of proteins.
+
+# 316 amino acids is average protein length
+
+#B) ### for any .faa files ### 
+
+echo $(cat *.faa | grep -v "^>" | tr -d "\n" | wc -c)/$(cat *.faa | grep "^>" | wc -l) | bc
+
+# just replaced the file name with *.faa
+```
+
+
+
+
+
+
+
+
