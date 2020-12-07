@@ -1,0 +1,124 @@
+---
+title: "Assignment 3"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+## Problem 1
+```{r}
+#  load 9606
+humanproteome <- read.table(file = "/media/sf_matthewcheung/Documents/CB2-101/problemset3/9606.tsv", sep = "\t", header = F)
+
+#view it
+head(humanproteome)
+
+# make list into protein accession numbers, then view
+PANS <- humanproteome$V1
+head(PANS)
+# print name if it is within within 1 - 100 
+if(1 < humanproteome$V2 & 100 > humanproteome$V2) {
+  print(humanproteome$V7)
+}  
+
+```
+
+## Problem 2 
+```{r}
+library(dplyr)
+# Load the file into object Swissvar
+
+Swissvar <- read.table("ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/variants/humsavar.txt", header = F, skip = 49, sep = "", fill = T,
+stringsAsFactors = F, flush = T, nrows=78710)
+Swissvar <- Swissvar[, -ncol(Swissvar)]
+head(Swissvar)
+
+# Remove AA in order to identify to get the number from column 4
+
+Swissvar$V4 <- substring(Swissvar$V4, 6)
+Swissvar$V4 <- substring(Swissvar$V4, 1, nchar(Swissvar$V4)-3)
+head(Swissvar)
+
+# Create list of Domain name and variation location
+
+Swissvar_final <- Swissvar %>% select(V1, V4) 
+Swissvar_final <- as.data.frame(Swissvar_final)
+colnames(Swissvar_final) <- c("Domain", "Location")
+Swissvar_final$Location <- as.numeric(Swissvar_final$Location)
+Swissvar_final <- Swissvar_final[order(Swissvar_final$Location, decreasing = T),]
+head(Swissvar_final)
+count(Swissvar_final$something)
+```
+
+## Problem 3 
+```{r}
+library(dplyr)
+library(ggplot2)
+
+#Filter out disease mutations and count the ones that appear
+head(Swissvar)
+disease <- Swissvar %>% filter(V5 == "Disease")
+head(disease)
+
+countdisease <- disease %>% dplyr::count(V1)
+
+
+#3A Top 5 genes
+countdisease <- countdisease[order(countdisease$n, decreasing = T),]
+head(countdisease, n=5)
+
+# Problem 3B: Plot frequency of each variant across genome
+ggplot(countdisease, aes(x=n, y=V1)) +
+  geom_col() +
+  geom_vline(xintercept=10.4) +
+  xlab("Number of Disease Variants") +
+  ylab("Gene Names")
+
+#3C Average number?
+mean(countdisease$n)
+```
+
+## Problem 4 
+```{r}
+library(tidyr)
+
+# Calculate using both disease and non
+head(Swissvar)
+count <- Swissvar %>% dplyr::count(V1)
+head(count)
+# Merge count from Problem 4 with countdisease problem 3
+
+both <- count %>% left_join(countdisease, by = "V1")
+colnames(both) <- c("Gene", "Variant_total", "Variant_disease")
+both <- both %>% mutate(Variant_disease = replace_na(Variant_disease, 0))
+head(both)
+
+# Do Pearson Correlation and plot
+cor.test(both$Variant_total, both$Variant_disease, method = "pearson")
+ggplot(both, aes(x=Variant_disease, y=Variant_total)) +
+  geom_jitter() + theme_bw() + xlab("Number of Disease-Causing Variants") +
+  ylab("Number of Total Variants") + geom_smooth(method="lm", se=F) + ggtitle("Total Variants vs Disease-Causing Variants")
+
+```
+
+## Problem 5 
+```{r}
+#Use a fermi estimation to estimate: How many farts does someone pass in their lifetime?
+# Assume that your average person farts 10 times per day
+# Assume that the average life expectancy for females is 72 yo
+# Assume that the average life expectancy for males is 70 yo
+# Assume that there is on average 50% males and 50% females
+## That would mean that the average person farts 10x/day * 365 days = 3650 times per year.
+## An average male would then be 70years * 3650/year = 255,500 farts in a lifetime
+## An average female would then be 72 * 3650/year = 262,800 farts in a lifetime
+## Averaging these two together would mean the average human on earth would pass gass about 259,150 times in their life. Tha'ts a lot!!
+```
+
