@@ -1,0 +1,163 @@
+---
+title: "Problem_Set_3_CGW"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+GitHub Documents
+
+This is an R Markdown format used for publishing markdown documents to GitHub. When you click the **Knit** button all R code chunks are run and a markdown file (.md) suitable for publishing to GitHub is generated.
+
+## Assingment 3 Problem 1
+
+The PFAM domain distribution for human proteome can be found at ftp://ftp.ebi.ac.uk/pub/databases/Pf am/current_release/proteomes/9606.tsv.gz. The first column of this file is the protein accession number. The location of the domain hit for each gene is given by the columns 2-5. Columns 2-3 are alignment start and end. Columns 4-5 are envelope start and end. Envelopes are generally considered the location of a domain on a gene. 
+
+Write a R scrpt that takes 9606.tsv.gz file as a first argument, a protein accession number as a second argument, and a location (integer) as a third argument. The program should print the domain name (hmm_name), if the location falls within a domain for a given protein accession. The program should return nothing if the position is outside the boundaries of domains. We should be able to run the program like this
+        > problem1.R ../data/9606.tsv.gz O95931 20
+        > Chromo
+Hint: You should create a list using the protein accession as key and location start and end as values. You might want to create a nested list or two separate lists.
+
+```{r}
+#  9606.tsv as first argument
+humanproteome <- read.table(file = "/Users/GarrettWilson/scratch/linux_data/problem1/9606.tsv", sep = "\t", header = F)
+head(humanproteome)
+# Protein Accession Numbers (PAN) as second argument. Make list
+PAN <- humanproteome$V1
+head(PAN)
+# location (integer) as thrid argument. 
+#print domain name if alignment is within 1 - 100 
+if(1 < humanproteome$V2 & 100 > humanproteome$V2) {
+  print(humanproteome$V7)
+}  
+#
+```
+
+# Assignment 3 Problem 2
+Swissvar is a database of human gene, their variations, and disease associations. The file can be downloaded from here: ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/variants/hu msavar.txt. The 2nd column of the file is the protein accession numbers. These are the same accession numbers used in the domain file in Problem 1. The 6th column is dbSNP and reports the variation at a particular location. 
+
+Using these two files, create a sorted list of domains according to the total number of their variations. The domains with higher variations should be on top. The program should not take any argument and output the domain list on STDOUT. The output should have two columns, separated by tab: domain name (hmm_name) and a number indicating variation, like this:
+    Domain  Variation
+    BRAC1   150
+    Chromo  100
+    ...
+Remember, your output will differ from the above shown output. The first line is the header. Note: You may skip writing a run.sh file for this problem.
+```{r}
+library(dplyr)
+# Swissvar
+Swissvar <- read.table("ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/variants/humsavar.txt", header = F, skip = 49, sep = "", fill = T,
+stringsAsFactors = F, flush = T, nrows=78710)
+Swissvar <- Swissvar[, -ncol(Swissvar)]
+head(Swissvar)
+
+# Remove AA to find location of varition in V4
+Swissvar$V4 <- substring(Swissvar$V4, 6)
+Swissvar$V4 <- substring(Swissvar$V4, 1, nchar(Swissvar$V4)-3)
+head(Swissvar)
+
+# Create list of Domain name and variation location
+Swissvar_final <- Swissvar %>% select(V1, V4) 
+Swissvar_final <- as.data.frame(Swissvar_final)
+colnames(Swissvar_final) <- c("Domain", "VarLocation")
+Swissvar_final$VarLocation <- as.numeric(Swissvar_final$VarLocation)
+Swissvar_final <- Swissvar_final[order(Swissvar_final$VarLocation, decreasing = T),]
+head(Swissvar_final)
+
+#
+```
+
+
+```{r}
+Swissvar_final %>% arrange(desc(VarLocation))
+
+```
+
+
+```{r}
+Swissvar_final2 <- Swissvar_final %>% 
+  arrange(Domain, desc(VarLocation))
+```
+
+
+```{r}
+library(dplyr)
+Swissvar_tally <- Swissvar_final_2 %>% 
+  group_by(Domain) %>% 
+  summarize(tally = n()) %>% 
+  arrange(desc(tally))
+head(Swissvar_tally)
+```
+
+# Assignment 3 Problem 3
+The first column of humsavar.txt file contains the gene name and the rest of the columns contains the other information. Using this file
+
+(A) list out the top five genes that are mutated in various human disease. 
+(B) plot the frequency distribution of disease variants in human genome across all the genes in the file 
+(C) calculate the average number disease causing mutations across all genes in human genome and mark this number on the previous plot as veritcal red line.
+
+Hint: Remember to skip the information lines in the file and also note that type of variant column contains both disease causing and non-disease causing variants.
+
+```{r}
+#Assignment3_Problem3_A
+library(dplyr)
+# Show only the genes that are involved in human disease
+
+SwissvarDiseaseGenes <- Swissvar %>% filter(V5 == "Disease")
+head(SwissvarDiseaseGenes)
+# Count the genes
+Swissvar_diseasecount <- SwissvarDiseaseGenes %>% dplyr::count(V1)
+# Top five genes involved in human disease
+Swissvar_diseasecount <- Swissvar_diseasecount[order(Swissvar_diseasecount$n, decreasing = T),]
+head(Swissvar_diseasecount, n=5)
+
+#Assignment3_Problem3_B Plot frequency of each variant across genome
+library(ggplot2)
+ggplot(Swissvar_diseasecount, aes(x=n, y=V1)) +
+  geom_col() +
+  geom_vline(xintercept=mean(Swissvar_diseasecount$n), color = "red") +
+  xlab("Number of Disease Variants") +
+  ylab("Gene Names")
+
+#Assignment3_Problem3_C
+mean(Swissvar_diseasecount$n) #average number of disease causing mutations
+```
+
+
+# Assignmment 3 Problem 4
+From the Swissvar file in Problem 2, we found the number of variations present in each domain. But this may be due to an artifact of domain abundance in human genome. Highly abundant domains will have higher chance of accumulating variations. We will test this hypothesis using a correlation between the abundance of domain and the accumulated variation. We calculated the abundance of domain in problem 3.
+
+First run the scripts in the problems 2 and 3 and save their outputs in files. The output should remain in their original locations. Caution: The rows in the files are different. You many need to write a separate R script to merge the columns of the file. [Hint: Have a look at the ?merge()]
+
+Use a Rscript to read the files created in problem 3 and 4 (or, a merged file). Draw a linear regression plot between the abundance in X-axis and number of variation in Y-axis. The script should also report the correlation betwween these two variables
+```{r}
+library(tidyr)
+# Find the total number of variations in the human genome
+Swissvar_totalcount <- Swissvar %>% dplyr::count(V1)
+head(Swissvar_totalcount)
+
+# Merge outputs for total number of variations (Swissvar_totalcount) and number of genes invovled in human disease (Swissvar_diseasecount)
+Swissvar_combined <- Swissvar_totalcount %>% left_join(Swissvar_diseasecount, by = "V1")
+#clean
+colnames(Swissvar_combined) <- c("Gene", "Variant_total", "Variant_disease")
+Swissvar_combined <- Swissvar_combined %>% mutate(Variant_disease = replace_na(Variant_disease, 0))
+head(Swissvar_combined)
+
+# Find the correlation between number of variations and number of disease-involved genes 
+cor.test(Swissvar_combined$Variant_total, Swissvar_combined$Variant_disease, method = "pearson")
+
+# Create a linear regression plot between the abundance (x axis) and number of variations (y axis) and include correlation
+ggplot(Swissvar_combined, aes(x=Variant_disease, y=Variant_total)) +
+  geom_jitter() +
+  theme_bw() +
+  xlab("Total Number of Variants involved in Human Disease") +
+  ylab("Total Number of Variations") +
+  geom_smooth(method="lm", se=F, color="black") +
+  ggtitle("Abundance vs Number of Variations", subtitle="R=0.76") +
+  theme(plot.title = element_text(hjust = 0.5, size = 18),
+        plot.subtitle = element_text(hjust = 0.5))
+```
+
+
+
