@@ -1,0 +1,89 @@
+---
+title: "Problemset 2"
+author: "Jake"
+date: "11/25/2020"
+output: html_document
+---
+
+## Problemset 2 - Problem 1a
+```{r}
+library(dplyr)
+# View airquality data
+data("airquality")
+head(airquality)
+# Make empty df for stats
+stats <- data.frame(var1 = "var1", var2 = "var2", corr = 1)
+stats <- stats %>% mutate(var1 = as.character(var1),
+                          var2 = as.character(var2),
+                          corr = as.numeric(corr))
+head(stats)
+# Run one example of pearson correlation
+a <- cor.test(airquality$Ozone, airquality$Solar.R)
+a$estimate
+row <- c("Ozone", "Solar.R", a$estimate)
+stats <- rbind (stats, row)
+head(stats)
+# Run alternative formats of pearson correlatino
+a <- cor.test(formula=~Ozone+Solar.R, data=airquality)
+a <- cor.test(airquality[,1], airquality[,2])
+# Make nested for loop to run correlations
+for(i in 1:6) {
+  for(j in 1:6) {
+    a <- cor.test(airquality[,i], airquality[,j])
+    row <- c(i, j, a$estimate)
+    stats <- rbind(stats, row)
+  }
+}
+head(stats)
+# Filter all correlations comparing a variable against itself
+stats <- stats %>% filter(corr != 1)
+# Replace numbers with variables
+stats[stats == "1"] <- "Ozone"
+stats[stats == "2"] <- "Solar.R"
+stats[stats == "3"] <- "Wind"
+stats[stats == "4"] <- "Temp"
+stats[stats == "5"] <- "Month"
+stats[stats == "6"] <- "Day"
+head(stats)
+```
+
+## Problemset 2 - Problem 1b
+```{r}
+library(ggplot2)
+# Find r^2 of Ozone vs Temp
+b <- lm(formula=airquality$Ozone~airquality$Temp)
+summary(b)
+                # Adjusted R^2 = 0.48
+# Make scatterplot of Ozone vs Temp
+ggplot(airquality, aes(x=Ozone, y=Temp, color=Month)) +
+  geom_point() +
+  ggtitle("Relationship Between Ozone and Temperature", subtitle="R^2=0.48") +
+  geom_smooth(method="lm", se=F, color="black") +
+  theme_bw() +
+  ylab("Temperature") +
+  theme(plot.title = element_text(hjust = 0.5, size = 18),
+        plot.subtitle = element_text(hjust = 0.5))
+```
+
+## Problemset 2 - Problem 2 (Not completed)
+```{r}
+library(seqinr)
+read.fasta(file = "NC_000001.fa")
+fastaread <- function(x) {
+  print(x)
+  read.fasta("x.fa")
+}   # Know this function is not correct, but unsure what else to try
+fastaread(x="NC_000001")
+```
+
+## Problemset 2 - Problem 3 (Not completed)
+```{r}
+library(seqinr)
+library(utils)
+BLOSUM62 <- read.table(file = "./BLOSUM62.txt")
+View(BLOSUM62) # This function allows me to view the whole data table and generate a BLOSUM score between any two amino acids
+read.fasta(file = "ex_align.fas")  #Not sure where to find this file
+```
+
+
+

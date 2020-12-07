@@ -1,0 +1,98 @@
+---
+title: "Problemset 3"
+author: "Jake"
+date: "11/28/2020"
+output: html_document
+---
+
+## Problemset 3 - Problem 1 (Not completed)
+```{r}
+# Load 9606.tsv
+humanprot <- read.table(file = "9606.tsv", sep = "\t", header = F)
+head(humanprot)
+# Make list of Protein Accession Numbers (PAN)
+PAN <- humanprot$V1
+head(PAN)
+# Make if statement to answer if alignment start falls within 1-100, print domain
+if(1 < humanprot$V2 & 100 > humanprot$V2) {
+  print(humanprot$V7)
+}  # Fairly certain this is not the desired outcome, but unsure what else to do
+
+```
+
+## Problemset 3 - Problem 2 
+```{r}
+library(dplyr)
+# Load Swissvar file
+Swissvar <- read.table("ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/variants/humsavar.txt", header = F, skip = 49, sep = "", fill = T,
+stringsAsFactors = F, flush = T, nrows=78710)
+Swissvar <- Swissvar[, -ncol(Swissvar)]
+head(Swissvar)
+# Remove AA in order to identify location of varition in V4
+Swissvar$V4 <- substring(Swissvar$V4, 6)
+Swissvar$V4 <- substring(Swissvar$V4, 1, nchar(Swissvar$V4)-3)
+head(Swissvar)
+# Create list of Domain name and variation location
+Swissvar_final <- Swissvar %>% select(V1, V4) 
+Swissvar_final <- as.data.frame(Swissvar_final)
+colnames(Swissvar_final) <- c("Domain", "Location")
+Swissvar_final$Location <- as.numeric(Swissvar_final$Location)
+Swissvar_final <- Swissvar_final[order(Swissvar_final$Location, decreasing = T),]
+head(Swissvar_final)
+```
+
+## Problemset 3 - Problem 3 
+```{r}
+# Filter for only mutations that result in disease
+head(Swissvar)
+Swissvar_disease <- Swissvar %>% filter(V5 == "Disease")
+head(Swissvar_disease)
+# Count which genes appear most
+Swissvar_diseasecount <- Swissvar_disease %>% count(V1)
+# Problem 3A: Show only the top five genes
+Swissvar_diseasecount <- Swissvar_diseasecount[order(Swissvar_diseasecount$n, decreasing = T),]
+head(Swissvar_diseasecount, n=5)
+# Problem 3C: Calculate the average number of mutations
+mean(Swissvar_diseasecount$n)
+# Problem 3B: Plot frequency of each variant across genome
+library(ggplot2)
+ggplot(Swissvar_diseasecount, aes(x=n, y=V1)) +
+  geom_col() +
+  geom_vline(xintercept=10.4, color = "red") +
+  xlab("Number of Disease Variants") +
+  ylab("Gene Names")
+```
+
+## Problemset 3 - Problem 4 
+```{r}
+library(tidyr)
+# Calculate total number of variations (both disease and no disease)
+head(Swissvar)
+Swissvar_count <- Swissvar %>% count(V1)
+head(Swissvar_count)
+# Merge Swissvar_count and Swissvar_diseasecount anf clean data
+Swissvar_combined <- Swissvar_count %>% left_join(Swissvar_diseasecount, by = "V1")
+colnames(Swissvar_combined) <- c("Gene", "Variant_total", "Variant_disease")
+Swissvar_combined <- Swissvar_combined %>% mutate(Variant_disease = replace_na(Variant_disease, 0))
+head(Swissvar_combined)
+# Calculate correlation between the two variant numbers
+cor.test(Swissvar_combined$Variant_total, Swissvar_combined$Variant_disease, method = "pearson")
+# Plot the two variables and report correlation
+ggplot(Swissvar_combined, aes(x=Variant_disease, y=Variant_total)) +
+  geom_jitter() +
+  theme_bw() +
+  xlab("Number of Disease-Causing Variants") +
+  ylab("Number of Total Variants") +
+  geom_smooth(method="lm", se=F, color="black") +
+  ggtitle("Total Variants vs Disease-Causing Variants", subtitle="R=0.76") +
+  theme(plot.title = element_text(hjust = 0.5, size = 18),
+        plot.subtitle = element_text(hjust = 0.5))
+```
+
+## Problemset 3 - Problem 5
+# Question: How many people in the world play soccer?
+# Assumption 1: There are 7 billion people in the world.
+# Assumption 2: 2 billion people are younger than 20; 5 billion people are older than 20.
+# Assumption 3: 20% of people younger than 20 play soccer; 20% of 2 billion = 400 million
+# Assumption 4: 1% of people older than 20 play soccer; 1% of 5 billion = 50 million
+# By adding these together, one can assume that approximately 450 million people in the world play soccer.
