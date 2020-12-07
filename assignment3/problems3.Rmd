@@ -1,0 +1,145 @@
+---
+title: "Problem set 3"
+author: "Sam Gary - sgary@uab.edu"
+output: html_notebook
+---
+
+#Problem 1:
+```{r}
+# Read in file to understand the structure of the table
+domain <- read.table("9606.tsv.gz")
+dim(domain)
+str(domain)
+
+# subset data frame to include categories of interest
+
+domain.loop <- domain[c("V1", "V4", "V5", "V7")]
+
+# Write for loop for solution. My understanding is you want this program to perform it's function for any given domain at any envelope location. 
+
+for (i in 1:(ncol(domain.loop))) {
+  for (j in 1:(ncol(domain.loop))) {
+    for (k in 1:(ncol(domain.loop))){
+      
+    }
+  }
+}
+  if(j > domain.loop$V4) {
+    if(k < domain.loop$V5){
+      cat(paste(i, j, k, sep = "\t"))
+    }
+  }
+  
+```
+
+
+#Problem 2:
+```{r}
+
+library(tidyverse)
+# Read in "humsavar.txt" file
+r <- read.table( "ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/variants/humsavar.txt", header = F,
+skip = 49, sep = "", fill = T,
+stringsAsFactors = F, flush = T,
+nrows=78710)
+r<- r[, -ncol(r)]
+
+# make domain.loop dataframe simple and only one column.
+domain.id <- domain["V7"]
+
+# Simplify "r" data frame.
+r.id <- r["V2"]
+
+r.combined <- rbind(r.id, domain.id)
+
+# Cannot seem to get dataframes to merge together. Had they merged, I would do the following after renaming the columns to fit the question:
+
+r.tally <- r.combined %>% 
+  group_by(Domain) %>% 
+  count(Variation) %>% 
+  arrange(desc())
+```
+
+
+#Problem 3:
+```{r}
+# A) list top five genes that are mutated in human disease
+
+# count the instnaces of mutation
+r.five <- r %>% 
+  group_by(V5 = "disease") %>% 
+  count(r$V1) %>% 
+  arrange(desc(n))
+
+head(r.five) # 5 most common disease-casuing mutations reside in TP53, F8, SCN5A, SCN1A, and FBN1
+
+```
+```{r}
+# plot the frequency distribution.
+
+plot.1 <- ggplot(r.five, aes(x = n))+
+  geom_histogram()
+
+plot.1
+
+```
+# Calculate mean number of variants per gene
+```{r}
+r.stats <- r.five %>% 
+  summarise(mean.var = mean(n))
+
+r.stats
+
+```
+
+
+# plot vertical red line on graph
+```{r}
+plot.2 <- ggplot(r.five, aes(x = n))+
+  geom_histogram()+
+  geom_vline(xintercept = 6.194711, color = "red")
+
+plot.2
+
+```
+
+
+
+#Problem 4:
+```{r}
+# Data have already been filtered for disease variants above. However, I was unable to complete problem 2, so I will write a hypothetical script below:
+r.reg <- merge(r.five, r.tally)
+
+#plot data
+plot(r.reg$abundance, r.reg$variation)
+
+#perform linear regression
+m <- lm(formula = abundance ~ variation, data = r.reg)# lm (y~x)
+summary(m)
+
+#plot w/ linear regression model
+{plot(iris$Petal.Length, iris$Sepal.Length)}
+abline(m)
+
+#perform correlation analysis
+cor.test(r.reg$abundance, r.reg$variation)
+
+
+```
+
+
+#Problem 5: Fermi estimation. How many liters of melted chocolate would be needed to cover enough cashews to cover a football field?
+```{r}
+# Assumptions: area of a single cashew is ~0.25 inches and mL chocolate needed to cover one cashew is 2 mL (0.002L).
+
+# football field is ~ 300 feet long x 160 feet wide or ~3500 inches by 2000 inches
+# total area of a football field is ~ 7 x 10^6 inches
+# Cashews needed to cover the area of a football field is ~ 7 x 10^6 / 0.25 = 2.8 x 10 ^7
+
+# Volume of chocolate needed to cover enough cashews to cover a football field would be:
+
+# 2.8 x 10^7 * 0.002L = 56,000 Liters
+
+
+```
+
