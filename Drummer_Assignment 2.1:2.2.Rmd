@@ -1,0 +1,80 @@
+---
+title: "Devin Drummer Assignment 2 (2.1, 2.2)"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## GitHub Documents
+
+This is an R Markdown format used for publishing markdown documents to GitHub. When you click the **Knit** button all R code chunks are run and a markdown file (.md) suitable for publishing to GitHub is generated.
+
+## Including Code
+
+You can include R code in the document as follows:
+
+```{r}
+#Libraries
+library(ggpubr)
+
+data("airquality")
+knitr::kable(head(airquality))
+
+#Cor test for data
+
+Results<-cor(airquality, method = "pearson", use = "complete.obs")
+
+Results
+
+#GGscatter plot
+
+ggpubr::ggscatter(airquality, x = "Ozone", y = "Temp",
+          add = "reg.line",  # Add regression line
+          conf.int = TRUE,   # Add confidence interval
+          add.params = list(color = "blue",
+                            fill = "lightgray")
+          )+ labs(title="Highest Correlation")+
+  stat_cor(method = "pearson", label.x = 3, label.y = 30)
+
+ggsave("Assignment 2 Problem 1.pdf")
+
+
+ggplot(mtcars, aes(x=wt, y=mpg)) + 
+  geom_point()+
+  geom_smooth(method=lm)
+```
+
+
+```{bash}
+#example I pulled from biostars
+
+awk '/^>/ {printf("%s%s\t",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < myseqs.fasta > linear.fasta
+
+while read IDS ; do grep "\b$IDS\b" linear.fasta ; done < listofids.txt
+```
+
+
+
+
+
+```{bash}
+
+
+```
+
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
