@@ -1,0 +1,84 @@
+---
+title: "Problem 1"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## GitHub Documents
+
+This is an R Markdown format used for publishing markdown documents to GitHub. When you click the **Knit** button all R code chunks are run and a markdown file (.md) suitable for publishing to GitHub is generated.
+
+## Including Code
+
+You can include R code in the document as follows:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+```{r engine = "bash"}
+pwd
+wget ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/proteomes/9606.tsv.gz
+gunzip 9606.tsv.gz
+```
+```{r} 
+#checking where I'm at
+getwd()
+list.files(getwd())
+```
+
+
+```{r}
+#read the tsv file with colnames added manually, convert to aggregate list
+pfam.table <- read.table("9606.tsv", sep = "\t", col.names = (c("seq id", "alignment start", 'alignment end', 'envelope start', "envelope end", "hmm acc", 'hmm name', 'type', 'hmm start', 'hmm end', 'hmm length', 'bit score', 'E-value', 'clan')))
+head(pfam.table)
+pfam.list<- as.list(pfam.table)
+```
+```{r}
+
+#verifying that this function will give output if the given y is between to locations of envelope start and end
+practice.function <- function(x, y) {
+  if ((pfam.list$envelope.end[pfam.list$seq.id==x] >=y) & (pfam.list$envelope.start[pfam.list$seq.id==x] <=y)) 
+    print("Okay")
+}
+
+practice.function("A0A024QZ18", "100")
+pfam.list$envelope.start[seqid=="A0A024QZ18"]    
+pfam.list$envelope.end[seqid=="A0A024QZ18"]
+#function only works on the first instance of the seq.id...
+
+
+practice.function2 <- function(x, y) {
+  if ((pfam.list$envelope.end[pfam.list$seq.id==x] >=y) & (pfam.list$envelope.start[pfam.list$seq.id==x] <=y)) 
+    print(pfam.list$hmm.name[pfam.list$seq.id==x,])
+}
+
+practice.function2("A0A024QZ18", "100")
+#Doesn't work either
+
+#another try..
+args = commandArgs(trailingOnly = TRUE)
+ptn.seq.id = args[1] 
+location = args[2]
+
+pfam.table <- read.table(gzfile("9606.tsv.gz"))
+
+domain = pfam.table[which((pfam.table$seq.id == ptn.seq.id) & (pfam.table$envelope.start <= as.integer(location)) & (pfam.table$envelope.end >= as.integer(location))), ]
+
+#doesn't work either.
+
+```
+
