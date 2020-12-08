@@ -1,0 +1,92 @@
+---
+title: "Drummer_Assignment 1"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## GitHub Documents
+
+This is an R Markdown format used for publishing markdown documents to GitHub. When you click the **Knit** button all R code chunks are run and a markdown file (.md) suitable for publishing to GitHub is generated.
+
+## Including Code
+
+You can include R code in the document as follows:
+
+```{bash}
+#Download data for Assignment 1
+wget ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/proteomes/
+
+ls
+```
+
+
+```{bash}
+#Determine how man domain types are in the human genome
+
+cat ./index.html | cut -f6 | sort | uniq|wc -l
+```
+
+
+```{bash}
+#Download bacterial Yersinia_pestis proteome 
+
+wget -r -A.faa ftp://ftp.ncbi.nlm.nih.gov/genomes/archive/old_refseq/Bacteria/
+
+#find faa 
+
+find ftp.ncbi.nlm.nih.gov/ -name "*.faa"
+
+ls
+```
+
+
+```{bash}
+##Complete count
+cat ../Yersinia_pestis | sort | uniq|wc -l
+```
+
+
+```{bash}
+#Problem 4
+## Download Data
+
+wget ftp://ftp.ncbi.nlm.nih.gov/genomes/archive/old_refseq/Bacteria/Escherichia_coli_K_12_substr__MG1655_uid57779/NC_000913.faa
+```
+
+
+```{bash}
+##Count the characters
+cat NC_000913.faa | grep "^>" | wc -l
+
+##Average length of protein
+
+cat NC_000913.faa | grep -v "^>" | wc
+
+###Number of character length
+cat NC_000913.faa | grep -v "^>" | wc -c
+
+###Get rid of returns and get final num
+cat NC_000913.faa | grep -v "^>" | tr -d "\n" | wc -c
+
+### Calculate 
+
+echo $(cat NC_000913.faa | grep -v "^>" | tr -d "\n" | wc -c)/$(cat NC_000913.faa | grep "^>" | wc -l) |bc
+```
+
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
