@@ -25,15 +25,9 @@ pfam.table <- read.table("9606.tsv", sep = "\t", col.names = (c("seq id", "align
 head(pfam.table)
 pfam.list<- as.list(pfam.table)
 ```
+
+
 ```{r}
-
-#verifying that this function will give output if the given y is between to locations of envelope start and end
-practice.function <- function(x, y) {
-  if ((pfam.list$envelope.end[pfam.list$seq.id==x] >=y) & (pfam.list$envelope.start[pfam.list$seq.id==x] <=y)) 
-    print("Okay")
-}
-
-
 #generates a dataframe of only positions with sequence id of interest
 
 positions <- which(pfam.table$seq.id=="P17040")
