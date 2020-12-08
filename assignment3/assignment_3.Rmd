@@ -106,6 +106,7 @@ domain_final <- domain_file %>%
 
 join_test <- left_join(swissvar_final, domain_final)
 
+
  grouped_join <- join_test %>%
   group_by(hmm_name) %>%
   count(hmm_name)
@@ -113,6 +114,8 @@ join_test <- left_join(swissvar_final, domain_final)
 colnames(grouped_join) = c("Domain", "Variation")
 
 final_table <- grouped_join[order(-grouped_join$Variation),]
+
+write.csv(final_table, file = "problem_2.csv", sep = ",")
 
 ```
 
@@ -126,12 +129,86 @@ the previous plot as veritcal red line.
 Hint: Remember to skip the information lines in the file and also note that type of variant column
 contains both disease causing and non-disease causing variants.
 
+```{r}
+swissvar <- read.table("ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/variants/humsavar.txt",header = F,skip = 49, sep = "", fill = T, stringsAsFactors = F, flush = T,nrows=78710)
 
+swissvar_clean<- swissvar[, -ncol(swissvar)]
+colnames(swissvar_clean)=c("gene","accnum","FTId","change","variant","dbSNP")
 
+write.csv(swissvar_clean, "problem_3.csv")
 
+library(dplyr)
 
+#selected only gene name and variant type
+#filtered for only disease causing variants
+#grouped by gene
+#counted variants for each gene
+#arranged in desc order
+#only top 5
+top5 <- swissvar_clean %>%
+  select(gene, variant) %>%
+  filter(swissvar_clean$variant == "Disease") %>%
+  group_by(gene) %>%
+  count(variant) %>%
+  arrange(desc(n)) %>%
+  head(n=5)
 
+library(ggplot2)
 
+plot <- swissvar_clean %>%
+  select(gene, variant) %>%
+  filter(swissvar_clean$variant == "Disease")
+
+ggplot(plot, aes(gene)) +
+         geom_bar()
+
+calc <- swissvar_clean %>%
+  select(gene, variant) %>%
+  filter(swissvar_clean$variant == "Disease") %>%
+  group_by(gene) %>%
+  count(variant)
+
+summary(calc)
+#length of gene list 3011
+#sum of n = 31177
+ave_variants_per_gene <- (sum(calc$n))/(length(calc$gene))
+ave_variants_per_gene #=10.354
+
+ggplot(plot, aes(gene)) +
+    geom_bar() +
+    geom_hline(yintercept = (sum(calc$n))/(length(calc$gene)), color = "red")
+      
+
+```
+
+####Problem 4####
+From the Swissvar file in Problem 2, we found the number of variations present in each domain. But this may
+be due to an artifact of domain abundance in human genome. Highly abundant domains will have higher
+chance of accumulating variations. We will test this hypothesis using a correlation between the abundance of
+domain and the accumulated variation. We calculated the abundance of domain in problem 3.
+First run the scripts in the problems 2 and 3 and save their outputs in files. The output should remain in
+their original locations. Caution: The rows in the files are different. You many need to write a separate R
+script to merge the columns of the file. [Hint: Have a look at the ?merge()]
+Use a Rscript to read the files created in problem 3 and 4 (or, a merged file). Draw a linear regression
+plot between the abundance in X-axis and number of variation in Y-axis. The script should also report the correlation between these two variables.
+
+```{r}
+problem4_domain <- read.table("./problem_2.csv",header=T, sep = ",")
+library(dplyr)
+problem4_domain <- problem4_domain %>%
+  select(Domain, Variation)
+
+problem4_freq <- read.table("./problem_3.csv",header=T, sep = ",")
+problem4_freq <- problem4_freq %>%
+  select()
+
+merge_data <- merge(variation_p4, abundance, by = "Domain")
+cor.test(x = merge_data$Freq, y = merge_data$Variation , method = "pearson")
+library(ggplot2)
+ggplot(merge_data, aes(x = merge_data$Freq, y = merge_data$Variation)) + geom_point() +
+  geom_smooth(method = 'lm')
+
+```
 
 
 
