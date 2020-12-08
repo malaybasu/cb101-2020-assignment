@@ -1,0 +1,26 @@
+---
+title: "problem set 1 problem 1"
+author: "Malay"
+date: "12/5/2020"
+output: html_document
+---
+
+```{r}
+setwd("~/Downloads/problem1")
+```
+
+```{bash}
+wget -q ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/proteomes/9606.tsv.gz
+gunzip 9606.tsv.gz
+```
+
+```{r}
+protein<-read.table(file='9606.tsv', sep='\t', header=FALSE)
+colnames(protein)<-c("accession", "start", "stop","e_start","e_stop", "d_acc", "name", "type")
+protein[1:10,]
+```
+
+```{bash}
+cat 9606.tsv | cut -f6 |sort | uniq
+```
+

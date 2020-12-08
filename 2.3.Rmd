@@ -1,0 +1,72 @@
+---
+title: "Untitled"
+author: "Malay"
+date: "12/7/2020"
+output: html_document
+---
+```{bash}
+wget txt ftp://ftp.ncbi.nih.gov/blast/matrices/BLOSUM62
+```
+
+```{bash}
+ls
+```
+
+```{r}
+library(BiocManager)
+BiocManager::install("Biostrings")
+```
+
+```{r}
+BiocManager::install("Matrix")
+```
+
+```{r}
+library(Biostrings)
+```
+
+```{r}
+library(Matrix)
+```
+
+
+```{r}
+##pulling in fasta file with amino acid sequences to comapre
+exfasta<-readAAStringSet("ex_alig.fas")
+exfasta
+```
+
+```{r}
+class(exfasta)
+```
+
+```{r}
+###replace missing values with space due to problems in alignment
+exfasta1<-gsub("","",exfasta)
+
+exfasta1
+class(exfasta1)
+
+###doesn't work, changes class, wont be usable for downstream alignment
+```
+
+
+```{r}
+blo<-read.csv("BLOSUM62", header=TRUE, sep="\t", skip=5)
+blo[,]
+```
+```{r}
+matrix(blo)
+blo
+```
+
+```{r}
+align<-pairwiseAlignment(exfasta$P1,exfasta$P2, substitutionMatrix="BLOSUM62")
+align
+```
+
+
+```{r}
+##error appears to be because of missing values represented by period, need to remove these values
+```
+

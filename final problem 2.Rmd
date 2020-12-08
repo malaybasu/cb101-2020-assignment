@@ -1,0 +1,83 @@
+---
+title: "final problem 2.1"
+author: "Malay"
+date: "12/5/2020"
+output: html_document
+---
+```{bash}
+wget ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/variants/humsavar.txt
+
+```
+
+
+```{bash}
+ls
+```
+
+```{r}
+###loading data into r
+var<-read.table(file='humsavar.txt', header = F,
+skip = 49, sep = "", fill = T, 
+stringsAsFactors = F, flush = T, 
+nrows=78710)
+colnames(var)<-c("gene", "acc", "ftid","AA_Change","Type", "dbsnip", "dxname")
+var[1:10,]
+```
+
+
+```{r}
+library(BiocManager)
+BiocManager::install("stringr")
+```
+```{r}
+library(stringr)
+```
+
+```{r}
+###extracting numeric positions of amino acid position changes
+numextract<-function(string){
+  str_extract(string,"\\d+")
+  
+}
+
+position<-numextract(var$AA_Change)
+
+```
+
+```{r}
+##adding position to var dataframe
+
+var$position<-position
+```
+
+```{r}
+var
+```
+
+
+```{bash}
+##get proteome domain info
+wget ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/proteomes/9606.tsv.gz
+gunzip 9606.tsv.gz
+
+```
+
+```{r}
+###make proteome into dataframe
+prot<-read.table(file='9606.tsv', sep='\t', header=FALSE)
+colnames(prot)<-c("accession", "start", "stop","e_start","e_stop", "d_acc", "name", "type")
+prot[1:10,]
+
+```
+
+```{r}
+#goal is to make accession number and location number into a key value pair/lookup table, then read the proteome/domain dataset against this lookup table
+
+lookup<-data.frame(var$acc,var$position)
+lookup
+```
+```{r}
+#does var.position fall between envelope start and stop?
+
+```
+

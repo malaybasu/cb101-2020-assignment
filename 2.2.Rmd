@@ -1,0 +1,44 @@
+---
+title: "Untitled"
+author: "Malay"
+date: "12/6/2020"
+output: html_document
+---
+```{r}
+getwd()
+
+```
+
+```{bash}
+ls
+```
+
+```{r}
+##trying to use regmatches to check a dataset for a given id
+dataset<-read.delim("NC_017168.faa", header=FALSE)
+seq_id<-384137008
+regmatches(seq_id,dataset,invert=TRUE)
+```
+
+
+```{r}
+
+##trying to create a for loop which prints from the line below an accession id to the next accession id IF the input accession id is founded
+
+dataset<-read.delim("NC_017168.faa", header=FALSE)
+seq_id<-384137008
+
+for (i in dataset) {
+  if {grep(seq_id, dataset)==TRUE
+  print("yes")
+  }
+}
+
+```
+
+```{r}
+#checcking if dataset loaded in correctly
+
+dataset[1:50,]
+```
+

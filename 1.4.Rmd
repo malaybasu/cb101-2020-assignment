@@ -1,0 +1,36 @@
+---
+title: "Probset1Prob4"
+author: "Malay"
+date: "12/6/2020"
+output: html_document
+---
+
+```{bash}
+wget -O ecoli ftp://ftp.ncbi.nlm.nih.gov/genomes/archive/old_refseq/Bacteria/Escherichia_coli_K_12_substr__MG1655_uid57779/NC_000913.faa 
+```
+
+```{bash}
+#How many proteins are there
+cat ecoli | grep -c \>
+```
+
+```{bash}
+#how many amino acids are there
+cat ecoli | grep -v "^>" |tr -d "\n" |wc -c
+```
+```{bash}
+##divide amino acids by n proteins
+echo $(cat ecoli | grep -v "^>" |tr -d "\n" |wc -c)/ $(cat ecoli | grep -c \>) |bc
+``` 
+
+
+```{bash}
+##to perform this task for any given .faa file in directory
+for file in *.faa;
+
+do
+echo $(cat $file | grep -v "^>" |tr -d "\n" |wc -c)/ $(cat $file | grep -c \>) |bc;
+done
+
+```
+

@@ -1,0 +1,45 @@
+---
+title: "Untitled"
+author: "Malay"
+date: "12/6/2020"
+output: html_document
+---
+
+```{r}
+airquality[1:10,]
+```
+
+```{r}
+aircor<-cor(airquality, use=c("complete.obs"))
+```
+
+```{r}
+class(aircor)
+```
+
+```{r}
+aircor<-data.frame(row=rownames(aircor)[row(aircor)], col=colnames(aircor)[col(aircor)], corr=c(aircor))
+aircor
+```
+
+```{r}
+aircor[order(-aircor$corr),]
+```
+
+```{r}
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+
+```
+
+```{r}
+eq<-lm(Temp~Ozone,data=airquality)
+eq
+summary(lm(Ozone ~ Temp, airquality))$r.squared
+```
+
+```{r}
+ggplot(airquality, aes(x=Ozone, y=Temp)) +ggtitle("Ozone and Temperature",subtitle = "r^2=0.488") + geom_point() + geom_smooth(method="lm",formula=y~x) + theme_bw()+ theme(panel.grid = element_blank(), panel.border = element_blank(), axis.line = element_line(colour="Black"), plot.title = element_text(size=rel(1.5), hjust = 0.5), plot.subtitle = element_text(size=rel(1.2), hjust = 0.5))
+```
+

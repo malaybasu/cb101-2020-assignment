@@ -1,0 +1,71 @@
+---
+title: "Untitled"
+author: "Malay"
+date: "12/7/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+
+fermi estimation problem
+
+In one minute, how many neurons fire in the human body?
+  
+first we must esimate the number of neurons
+  
+There are about 10^11 neurons in the brain
+
+
+Is the number of neurons in organs and nerves large enough to effect our estimates?
+
+There are about 20 vertebrae and a nerve which arises off of each side of the vertebrae, thus there are 40 large nerve trunks
+
+Even if each nerve has 100,000 neurons in it, there are only 4,000,000 (4x 10 ^6) neurons in the peripheral nervous system
+
+THus, the total neumber of neurons in the body is still approxiately 10^11
+
+
+Next, we must determien how many are frequently firing and how often they fire within a brief interval.
+
+The avearge action potential lasts appoxmiately 5 msec
+
+there are 60 seconds in a minute, and 1000 msecs in a second; thus, any neuron in theory has the capacity to fire 1200 times in a minute
+
+It's been esteimated that 90% of neurons rarely fire, thus, only 10% of 10^11 neurons are likly to fire in any given one minute interval=10^10
+
+Let's assume the odds of any of the remaining neuron firing over any 5msec interval are low : 1/100,000 (low average rates of activity are important to protect against seizures)
+
+However, over a given minute, they have the opporutnity to fire 1200 times, thus, over the a single minute the probability is three orders of magnitude better, about 1/100
+
+Thus, over the course ofsingle minute, 1.0% of the 10^10 neurons fire; or 10^8 neurons (100 million neurons)
+
+interestinly, that's about the number of neurons in a mouse brain, which has 70,000,000. so you could say we are using the equivalent of a mouses entire nervous system in any one minute interval.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+=
