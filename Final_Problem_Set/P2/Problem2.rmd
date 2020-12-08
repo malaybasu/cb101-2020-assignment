@@ -1,0 +1,43 @@
+---
+title: "Problem 2"
+output: html_notebook
+---
+
+
+```{bash}
+#!/usr/bin/env Rscript
+
+#install.packages("data.table")
+#File_url =  "ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/proteomes/9606.tsv.gz" 
+#df1 = as.data.frame(data.table::fread(File_url, header = F))
+
+df1 = read.table(gzfile("9606.tsv.gz"))
+
+r <- read.table("ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/variants/humsavar.txt", header = F, skip = 49, sep = "", fill = T, stringsAsFactors = F, flush = T, nrows=78710)
+r<- r[, -ncol(r)]
+df2 = as.data.frame(r)
+
+df = merge(x = df1, y = df2, by = "V1", all = TRUE)
+
+d1 = df1[c("V1", "V7")]
+d2 = df2[c("V2", "V6")]
+df = merge(x = d1, y = d2, by.x = "V1", by.y = "V2", all.x = F, all.y = F)
+mdf = df[c("V7", "V6")]
+
+#print(dim(mdf))
+udf = unique(mdf)
+#print(dim(udf))
+
+#class(udf$V7)
+
+w = table(udf$V7)
+
+f = as.data.frame(w)
+colnames(f) <- c("Domain", "Variation")
+
+
+#f[which((f$Domain == "Chromo")),]
+f[order(-f$Variation),]
+```
+
+

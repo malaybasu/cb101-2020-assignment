@@ -1,0 +1,13 @@
+How many people own a guitar in the world?
+
+Based on fermi estimation it is known that the USA has a population of 340e6 people.
+
+Based on known stats, 1 in 2 people can play an instrument. 
+
+it is known that 2e6 guitars are sold each year in the united states.
+
+Based off this it can be estimated that roughly 140e6 peolple in the united states play an instrument, and that 3e6 guitars are sold each year.
+
+Taken together, it can be estimated that if in 1 in 70 people own a guitar that they play.
+
+It is estimated that there is 11e7 people in the world. If 1 in 70 baught a guitar a total of 157,142,857 people own a guitar. 

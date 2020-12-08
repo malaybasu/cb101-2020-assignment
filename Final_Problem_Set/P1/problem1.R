@@ -1,0 +1,21 @@
+#!/usr/bin/env Rscript
+args = commandArgs(trailingOnly=TRUE)
+if (length(args) < 3) {
+	  stop("At least one argument must be supplied (input file).n", call.=FALSE)
+}
+
+File = args[1] #"9606.tsv.gz"
+asseccion = args[2] #"O95931"
+location = args[3] #"20"
+
+df = read.table(gzfile(File))   
+#Table
+
+result = df[which((df$V1 == asseccion) & (df$V4 <= as.integer(location)) & (df$V5 >= as.integer(location))), ]
+#print(result)
+#as.character(result$V7)
+
+if (length(result$V7) > 0 ) {
+	  print(as.character(result$V7))
+}
+
