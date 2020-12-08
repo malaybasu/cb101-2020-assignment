@@ -1,0 +1,52 @@
+---
+title: "Problem 3"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Reading data 
+
+```{r}
+r <- read.table(
++     "ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/variants/humsavar.txt",
++     header = F,
++     skip = 49, sep = "", fill = T,
++     stringsAsFactors = F, flush = T,
++     nrows=78710)
+
+r<- r[, -ncol(r)]
+```
+#Part 1
+
+```{r}
+library(dplyr)
+most.disease.mutations <- r %>% 
+  group_by(V5 = "Disease") %>%
+  count(r$V1) %>%
+  arrange(desc(n))
+top5 <- head(most.disease.mutations, 5)
+top5
+```
+
+# Part 2
+```{r}
+ggplot(most.disease.mutations, aes(x=n))+ geom_histogram(binwidth = 20)
+```
+
+# Part 3
+```{r}
+mean(most.disease.mutations$n)
+#total number of genes in human genome is <20,000. For the purpose of this exercise the mean was calculated out of the number of genes with variants reported in humsavar.txt
+str(unique(r$V1))
+#12706 genes have variants reported in humsavar.txt
+round(12706/(as.integer(sum(most.disease.mutations$n))), 2)
+# mean number of disease-causing mutations per genes in humsavar.txt = 0.161428, rounded to 0.16
+ggplot(most.disease.mutations, aes(x=n))+ geom_histogram(binwidth = 25) +
+  annotate("text", x = 450,y = 6000, label = "Mean mutations per gene = 0.16")+
+  geom_vline(xintercept = 0.161428, color="red")
+
+```
+

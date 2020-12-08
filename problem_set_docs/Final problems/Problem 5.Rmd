@@ -1,0 +1,60 @@
+---
+title: "Problem 5"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#Fermi estimation: What percentage of the US GDP is lost to parents staying home to take care of their children because of the cold?
+
+US.GDP <- 21000000000000 #in 2019
+US.GDP
+#roughly 20% of US population is made up of children
+children<- 350000000*.2
+children # 70 million children
+
+#say families have 1.5 children on average, so -> 
+70000000/1.5
+#46666667 families.
+dual.parent.homes<- 46666667-11000000
+dual.parent.homes
+#only 1 parent has to stay home to help children, but 11 million parents are single. We will estimate that 25% of them will stay home to care for the child. 50% of the children are old enough to stay home alone and another 25% won't care.
+
+single.parent.stay.home <- 11000000/4
+single.parent.stay.home
+illness.freq <- 6 #children get sick every 2 months or so, so 6 times a year
+
+single.parent.days.missed<- single.parent.stay.home*6
+
+dual.parent.days.missed<- dual.parent.homes* 6
+
+Average.US.adult.income <- 35977 # in dollars
+per.day<- Average.US.adult.income/261 #261 working days per year
+per.day # $98.56712
+
+#income lost per days missed
+lost.income<- per.day*(single.parent.days.missed+dual.parent.days.missed)
+
+lost.income/US.GDP
+#0.00151299% of US GDP is lost every year to parents staying home with children because of colds
+
+#inference with added/different data 
+
+#There are 56 million students in school in the US.
+#4 weeks = 20 days
+#This paper estimates that closing schools four weeks would reduce U.S. GDP by between $10 and $47 billion. We will take the average of these.
+10+47/2
+#33.5
+33.5/20 #mean $ lost by closing for four weeks divided by 20 days
+#1.65 billion lost per day, with all students mission
+
+lost.per.child.per.day <- 1650000000/56000000 #loss per day per child 
+#176.78
+lost.to.colds<- lost.per.child.per.day *189000000 #189 million days of school missed by children for colds every year from https://pubmed.ncbi.nlm.nih.gov/23259364/#:~:text=The%20common%20cold%20leads%20to,to%20care%20for%20their%20children.
+lost.to.colds/US.GDP
+# 0.0002651786% of GDP lost. Earlier estimate overestimated, compared to this cost. Does not include days of work lost from parents getting sick, of course. 
+```
+
