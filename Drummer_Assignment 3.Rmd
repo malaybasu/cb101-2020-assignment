@@ -1,0 +1,75 @@
+---
+title: "Devin Drummer Assignment 3"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## GitHub Documents
+
+This is an R Markdown format used for publishing markdown documents to GitHub. When you click the **Knit** button all R code chunks are run and a markdown file (.md) suitable for publishing to GitHub is generated.
+
+## Including Code
+
+You can include R code in the document as follows:
+
+```{r}
+P1 <- read.table(
+"ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/proteomes/9606.tsv.gz",
+header = F, sep = ",", fill = T, 
+stringsAsFactors = T, 
+nrows="")
+P1<- r[, -ncol(r)]
+
+list()
+```
+
+
+```{r}
+r <- read.table(
+"ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/variants/humsavar.txt",
+header = F,
+skip = 49, sep = "", fill = T, 
+stringsAsFactors = F, flush = T, 
+nrows=78710)
+r<- r[, -ncol(r)] %>% 
+  rename("Accession Number"="V2", "dbSNP"="V6")
+```
+
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+
+ggpubr::ggbarplot(r, x = "Accession Number", y = "dbSNP",
+          fill = "dbSNP",               # change fill color by cyl
+          color = "white",            # Set bar border colors to white
+          #palette = "jco",            # jco journal color palett. see ?ggpar
+          sort.val = "asc",           # Sort the value in dscending order
+          sort.by.groups = FALSE,      # Sort inside each group
+          x.text.angle = 90           # Rotate vertically x axis texts
+          )
+
+
+```
+
+
+```{r}
+#Fermi Estimation
+
+##Question to be answered: How many times are F31 assist documents opened on the day they are due to NIH?
+
+###Premise: I submitted my F31 resubmission today and thought it would be interesting to estimate the number of times documents were opened on ASSIST throughout the country. I will use my value as near the maximum threshold as some additional hiccups made my submission more stressful (Found out PA had expired hours before the application was due.). I opended each of my documents 5 times today. There are 14 main documents. I averaged the low-end (one time), moderate (3 times) and one above myself as the highest-end (6 times). For this initial steps the calculations are ((14*1) + (14*3) + (14*6))/3= 46.6 documents were opened accounting for the three degrees of verification (or in reality anxiety). There are approximately 261 major research institutions in the United States of America. Attending those are approximately 1.8 million graduate students (we will assume half of those are PhD students eligible for the F31 i.e. 900,000 PhDs). Each cycle ~ 10% of the eligible PhDs apply to and F31 making the number of applicants 90,000. To bring everything together the average number of documents opened on the last day by one person are 46.6 * the number of applicants applying each cycle (90,000) = 4,194,000 documents were opended today prior to the submission of all the F31s. 
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
