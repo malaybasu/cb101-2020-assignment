@@ -1,0 +1,90 @@
+---
+title: "final prob 3"
+author: "Malay"
+date: "12/7/2020"
+output: html_document
+---
+
+```{bash}
+wget ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/variants/humsavar.txt
+```
+
+```{r}
+###loading data into r
+var<-read.table(file='humsavar.txt', header = F,
+skip = 49, sep = "", fill = T, 
+stringsAsFactors = F, flush = T, 
+nrows=78710)
+colnames(var)<-c("gene", "acc", "ftid","AA_Change","Type", "dbsnip", "dxname")
+var[1:10,]
+```
+
+```{r}
+class(var$gene)
+class(var$Type)
+```
+
+
+```{r}
+#filter dataset to remove non-disease causing variants
+
+
+```
+
+```{r}
+#generate count for gene name appearnces in the dataset
+summary(as.factor(var$gene))
+```
+
+```{r}
+#filter dataset to include only disease cuasing variants
+vardx<-var[var$Type=="Disease",]
+vardx
+```
+
+
+```{r}
+#frequency  of dx causing variants in the human genome
+summary(as.factor(vardx$gene))
+
+```
+
+```{r}
+###trying to append these counts to the dataset
+count<-summary(as.factor(vardx$gene))
+count
+class(count)
+vardxx<-vardx
+vardxx$count<-count
+vardxx
+##cannot append bc differieng lengths
+```
+
+
+```{r}
+#will attempt to make counts into its own dataframe
+x<-data.frame(count)
+x
+```
+```{r}
+dim(x)
+##does not recongize this as an array
+```
+
+
+```{r}
+#plot frequency distribution of dx causing variants
+class(count)
+count<-count[count]
+hist(count)
+mean(count)
+```
+
+
+```{r}
+#what is average number of dx causing variants in genome? plot this value as red line in freq distribution graph
+
+
+```
+
+

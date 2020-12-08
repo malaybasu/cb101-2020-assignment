@@ -1,0 +1,50 @@
+---
+title: "Final Problem 1.1"
+author: "Malay"
+date: "11/28/2020"
+output: html_document
+---
+
+```{bash}
+wget ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/proteomes/9606.tsv.gz
+gunzip 9606.tsv.gz
+
+```
+
+```{r}
+prot<-read.table(file='9606.tsv', sep='\t', header=FALSE)
+colnames(prot)<-c("accession", "start", "stop","e_start","e_stop", "d_acc", "name", "type")
+prot[1:10,]
+
+```
+
+```{r}
+###define your protein of interest using an accession number
+target='A0A024QZ18'
+###input your amino acid position of interest
+location=65
+###if that amino acid position falls within a domain for that protein, this code will print the type of domain
+subset(prot, (accession == target & e_start<=location & e_stop>=location), select=c(name))
+
+```
+
+```{r}
+###define your protein of interest using an accession number
+target='A0A024QZ18'
+###input your amino acid position of interest
+location=76
+###if that amino acid position falls within a domain for that protein, this code will print the type of domain
+subset(prot, (accession == target & e_start<=location & e_stop>=location), select=c(name))
+
+```
+
+
+```{r}
+###define your protein of interest using an accession number
+target='A0A024QZX5'
+###input your amino acid position of interest
+location=11
+###if that amino acid position falls within an domain for that protein, this code will print the type of domain
+subset(prot, (accession == target & e_start<=location & e_stop>=location), select=c(name))
+
+```

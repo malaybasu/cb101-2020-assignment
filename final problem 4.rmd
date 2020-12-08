@@ -1,0 +1,70 @@
+---
+title: "Untitled"
+author: "Malay"
+date: "12/7/2020"
+output: html_document
+---
+
+```{r}
+### I was not able to complete problems 2 and 3. this problem rquires succsefful ccompletion of these problems to generate an output, however, this is what I would have done (i.e. I generated test files with fake abundance and frequency data so that I could merge the datasets, plot and correlate them).
+```
+
+```{bash}
+ls
+```
+```{r}
+getwd()
+```
+
+
+
+```{r}
+##script to load files in using bash saved as a shell script
+
+abund<-read.table("/home/cb2/Downloads/PS3/Test_abund", header=FALSE)
+abund
+colnames(abund)<-c("domain","abund")
+abund
+
+
+```
+```{r}
+#it seemed like you wanted us to deal with datasets that don't match and have missing data, so for my test files i made them have differing number of domains and differing domain types
+freq<-read.table("/home/cb2/Downloads/PS3/Test_freq", header=FALSE)
+freq
+colnames(freq)<-c("domain","freq")
+freq
+```
+```{r}
+class(freq)
+```
+
+
+
+```{r}
+abun_freq<-merge(abund,freq, all.x = TRUE,all.y=TRUE)
+abun_freq
+```
+
+
+
+```{r}
+#linear regression
+regress<-lm(abund~freq,data=abun_freq)
+regress
+```
+
+```{r}
+cor.test(abun_freq$abund,abun_freq$freq)
+```
+
+```{r}
+library(ggplot2)
+
+```
+
+```{r}
+ggplot(abun_freq, aes(x=abund, y=freq)) +ggtitle("Domain Abundance and Mutation Frequency",subtitle = "Correlation=0.954") + geom_point() + geom_smooth(method="lm",formula=y~x) + theme_bw()+ theme(panel.grid = element_blank(), panel.border = element_blank(), axis.line = element_line(colour="Black"), plot.title = element_text(size=rel(1.5), hjust = 0.5), plot.subtitle = element_text(size=rel(1.2), hjust = 0.5))
+
+```
+

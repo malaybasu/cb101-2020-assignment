@@ -1,0 +1,23 @@
+---
+title: "ProblemSet1Problem2"
+author: "Malay"
+date: "12/5/2020"
+output: html_document
+---
+
+
+
+
+```{r}
+setwd("~/Downloads/problem1/Problem 2")
+```
+
+```{bash}
+wget -q -r -nH --cut-dirs=4 -A.faa ftp://ftp.ncbi.nlm.nih.gov/genomes/archive/old_refseq/Bacteria/*Yersinia_pestis_*
+
+```
+
+```{bash}
+ls
+```
+
