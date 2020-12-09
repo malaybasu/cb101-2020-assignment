@@ -1,0 +1,25 @@
+### read the args from the cmd
+args <- commandArgs(trailingOnly = T)
+file <- args[1]
+ID <- args[2]
+domain <- as.numeric(args[3])
+
+#Test with data
+#file="../data/9606.tsv.gz"
+#ID='O95931'
+#domain=as.numeric(20)
+#setwd("/media/sf_emmahfy/Download/course/CBS101/CBS101_assignment/assignment3/problem1/")
+
+### read data
+data=read.table(gzfile(paste0(file)), header=F)
+### extract dara
+result=data[which(data[,1]==ID),]
+start=as.numeric(result[4])
+end=as.numeric(result[5])
+### print the data fitted
+if(domain>=start && domain<=end){
+  cat(paste0(as.matrix(result[7]),"\n"))
+}else{
+  cat("\n")
+}
+

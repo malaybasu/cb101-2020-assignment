@@ -1,0 +1,40 @@
+---
+title: "assignment3_P4"
+author: "FengyuanHuang"
+date: "11/24/2020"
+output: html_document
+---
+
+```{r}
+### read data
+setwd("/media/sf_emmahuang/Downloads/course/CBS101/CBS101_assignment/CBS101_assignment/CBS101_assignment/assignment3/problem3/")
+variation <- read.table("../problem2/variation.txt",header=T)
+abundance <- read.table("../problem3/abundance.txt",header=T)
+```
+
+
+```{r}
+### merge data
+pdf("Regression.pdf",width = 6,height = 5)
+mergeData=merge(variation,abundance,by.x="Domain",by.y="Domain",all=T)
+plot(x=mergeData$Abundance,y=mergeData$Variations,xlab="abundance",ylab="variation")
+```
+
+
+```{r}
+### perform linear regression
+linearFit=lm(Variations~Abundance,data=mergeData)
+abline(linearFit)
+```
+
+
+```{r}
+### perform correlation
+cor=cor.test(x=mergeData$Abundance,y=mergeData$Variations,alternative = "two.sided",method="pearson")
+cat(cor$estimate)
+formatDcm=function(x){return(format(round(x, 2), nsmall = 2))}
+text=paste("Variation=",formatDcm(linearFit[1]$coefficients[1]),"+",formatDcm(linearFit[1]$coefficients[2]),"*Abundance","\n","Pearson correlation=",formatDcm(cor$estimate))
+legend("topleft",bty = "n",legend = text)
+dev.off()
+```
+

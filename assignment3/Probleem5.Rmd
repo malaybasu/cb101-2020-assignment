@@ -1,0 +1,72 @@
+---
+title: "Assignment3_P5"
+author: "FengyuanHuang"
+date: "12/8/2020"
+output: html_document
+---
+
+
+## Problem I rised is: call confident variants from DNA sequence, filter variants based on allel frequency, read depth, and strand bias
+## resolution
+1. map DNAsequence to reference(HG38)
+```{bash}
+bwa mem -t 8 hg38.fa Read_1.fastq Read_2.fastq 
+```
+2. call variants using gatk
+
+```{bash}
+gatk Mutect2 -R hg38.fa -I Read.bam -O unfiltered.vcf
+```
+
+3. filter variants, fisrtly, check the alignment of variants position. 
+```{bash}
+grep -v "^#" unfiltered.vcf > No_header_unfiltered.vcf
+```
+
+```{python}
+#!/usr/bin/env python
+import os,sys
+import subprocess
+infile = sys.argv[1]
+f=open(infile, "r")
+for line in f:
+    line=line.strip('\n')
+    ln=line.split('\t')
+    region=ln[11]
+    if region=="CDS":
+        chrom=ln[0]
+        pos=ln[1]
+        gene=ln[12]
+        ID=ln[14]
+
+        cmd1='samtools mpileup -Q 0 -f hg38.fa -r '+str(chrom)+':'+str(pos)+'-'+str(pos)+' bamfile'
+        out1 = subprocess.Popen(cmd1, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+ #       t = out1.communicate()[0].decode('utf-8')
+        for line in out1.stdout:
+            line=line.decode('utf-8').strip('\n')
+            if line.startswith("chr"):
+                info=line
+                mpil=info.split('\t')
+                positive=mpil[12]
+                neg=mpil[13]
+                depth=mpil[3]
+                vardep=mpil[8]
+                AF=int(vardep)/int(depth)
+                if int(positive)!=0 and int(neg)!=0:
+                    ratio=int(positive)/int(neg)
+                    if AF>0.05 and 0.33<ratio<=3 and int(positive)!=1 and int(neg)!=1:
+                         print(str(ID)+"\t"+region+"\t"+gene+"\t"+info)
+f.close()
+```
+
+
+```{bash}
+python No_header_unfiltered.vcf > mpileup.txt
+```
+
+base on the filtered list, extract variants from raw vcf file
+```{bash}
+for i in `awk -F'\t' '{print $2}' mpileup.txt`; do grep -w $i No_header_unfiltered.vcf > filter.vcf; doneee
+```
+
+
